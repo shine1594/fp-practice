@@ -1,0 +1,27 @@
+{
+  "name": "fp-practice",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:shine1594/fp-practice.git",
+  "author": "DoHyeong Lee",
+  "license": "MIT",
+  "dependencies": {
+    "babel-runtime": "^6.26.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2"
+  },
+  "scripts": {
+    "test": "mocha --require babel-core/register index.spec.js"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ],
+    "plugins": ["transform-runtime"]
+  }
+}
