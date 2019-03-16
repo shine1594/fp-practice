@@ -1,7 +1,5 @@
-# fp-practice
-함수형 자바스크립트 스터디 연습 문제
+## 실행 방법
 
-```
-npm -i
-npm test
-```
+1. git clone [깃헙 주소]
+2. `npm -i` or `yarn`
+3. `npm test`
