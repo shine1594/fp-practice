@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import {
+  reduce,
   map,
   filter,
-  reduce,
   groupBy,
   countBy,
   indexBy,
@@ -101,7 +101,7 @@ describe('indexBy 함수는', () => {
 });
 
 describe('pipe 함수는', () => {
-  it('여러 함수를 인자로 받아서 합성한 함수를 결과로 반환합니다 (reduce함수를 이용하여 구현해 보세요!)', () => {
+  it('여러 함수를 인자로 받아서 합성한 함수를 반환한다 (reduce함수를 이용하여 구현해 보세요!)', () => {
     const func = pipe(
       iter => map(square, iter),
       iter => filter(isOddNumber, iter),
@@ -110,7 +110,7 @@ describe('pipe 함수는', () => {
     expect(func(iter)).to.eql(35);
   });
 
-  it('첫 번째 함수에 여러 개의 인자를 전달할 수 있습니다', () => {
+  it('첫 번째 함수에 여러 개의 인자를 전달할 수 있다', () => {
     const addAll = (...args) => reduce(add, args);
     const func = pipe(
       addAll,
@@ -123,7 +123,7 @@ describe('pipe 함수는', () => {
 });
 
 describe('go 함수는', () => {
-  it('초기값과 여러 함수를 인자로 받아서 합성한 함수에 초기값을 인자로 전달하여 즉시 실행합니다', () => {
+  it('초기값과 여러 함수를 인자로 받아서 합성한 함수에 초기값을 인자로 전달하여 즉시 실행한다', () => {
     const res = go(
       products,
       list => filter(propEq('category', 'phone'), list),
@@ -136,7 +136,7 @@ describe('go 함수는', () => {
 });
 
 describe('curry 함수는', () => {
-  it('어떤 함수의 인자가 모두 채워질 때까지 평가를 미루는 함수를 반환합니다', () => {
+  it('어떤 함수의 인자가 모두 채워질 때까지 평가를 미루는 함수를 반환한다', () => {
     const add3 = curry((a, b, c) => a + b + c);
     expect(add3(1)(2)(3)).to.eql(6);
     expect(add3(1, 2)(3)).to.eql(6);
@@ -144,7 +144,7 @@ describe('curry 함수는', () => {
     expect(add3(1, 2, 3)).to.eql(6);
   });
 
-  it('두 번째 인자로 커링 횟수를 지정할 수 있습니다', () => {
+  it('두 번째 인자로 커링 횟수를 지정할 수 있다', () => {
     const map_c = curry(map);
     const filter_c = curry(filter);
     const reduce_c = curry(reduce, 1); //한번만 커링
@@ -163,19 +163,19 @@ describe('curry 함수는', () => {
 describe('partial 함수는', () => {
   const add3 = (a, b, c) => a + b + c;
 
-  it('어떤 함수의 인자를 미리 적용하여 한번 지연 평가시킵니다', () => {
+  it('어떤 함수의 인자를 미리 적용하여 한 번 지연 평가한다', () => {
     expect(partial(add3)(1, 2, 3)).to.eql(6);
     expect(partial(add3, 1, 2)(3)).to.eql(6);
     expect(partial(add3, 1)(2, 3)).to.eql(6);
     expect(partial(add3, 1, 2, 3)()).to.eql(6);
   });
 
-  it('_심볼을 이용하여 원하는 위치의 인자를 미리 적용할 수 있습니다', () => {
+  it('_심볼을 이용하여 원하는 위치의 인자를 미리 적용할 수 있다', () => {
     expect(partial(add3, _, 2, 3)(1)).to.eql(6);
     expect(partial(add3, _, 2, _)(1, 3)).to.eql(6);
   });
 
-  it('___심볼을 이용하여 나머지 인자를 지원합니다', () => {
+  it('___심볼을 이용하여 나머지 인자를 지원한다', () => {
     const addAll = (...args) => reduce(add, args);
     expect(partial(addAll, 1, ___, 5)(2, 3, 4)).to.eql(15);
     expect(partial(addAll, 1, ___, 5, _, 7, _, 9)(2, 3, 4 ,6, 8)).to.eql(45);
