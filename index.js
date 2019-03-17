@@ -1,11 +1,11 @@
 const _ = Symbol("parameter");
 const ___ = Symbol("rest parameters");
 
+const reduce = function() {};
+
 const map = function() {};
 
 const filter = function() {};
-
-const reduce = function() {};
 
 const groupBy = function() {};
 
@@ -22,9 +22,9 @@ const curry = function() {};
 const partial = function() {};
 
 export {
+  reduce,
   map,
   filter,
-  reduce,
   groupBy,
   countBy,
   indexBy,
