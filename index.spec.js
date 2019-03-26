@@ -46,12 +46,20 @@ describe('reduce 함수는', () => {
   it('초기값이 없는 경우, 첫 번째 element를 초기값으로 한다', () => {
     expect(reduce(add, iter)).to.eql(15);
   });
+
+  it('첫 번째 인자까지 커링한다', () => {
+    expect(reduce(add)(10, iter)).to.eql(25);
+    expect(reduce(add)(iter)).to.eql(15);
+  });
 });
 
 describe('map 함수는', () => {
   it('iterable 객체를 순회한다 (reduce함수를 이용하여 구현해 보세요!)', () => {
-    const res = map(square, iter);
-    expect(res).to.eql([1, 4, 9, 16, 25]);
+    expect(map(square, iter)).to.eql([1, 4, 9, 16, 25]);
+  });
+
+  it('첫 번째 인자까지 커링한다', () => {
+    expect(map(square)(iter)).to.eql([1, 4, 9, 16, 25]);
   });
 });
 
