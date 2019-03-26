@@ -6,11 +6,13 @@
   "author": "DoHyeong Lee",
   "license": "MIT",
   "dependencies": {
-    "babel-runtime": "^6.26.0"
+    "babel-runtime": "^6.26.0",
+    "parcel-bundler": "^1.12.3"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-plugin-transform-runtime": "^6.23.0",
+    "@babel/core": "^7.4.0",
+    "@babel/runtime": "^7.4.2",
+    "@babel/plugin-transform-runtime": "^7.4.0",
     "babel-preset-env": "^1.7.0",
     "chai": "^4.2.0",
     "mocha": "^6.0.2"
@@ -22,6 +24,10 @@
     "presets": [
       "env"
     ],
-    "plugins": ["transform-runtime"]
+    "plugins": [
+      [
+        "@babel/plugin-transform-runtime"
+      ]
+    ]
   }
 }
