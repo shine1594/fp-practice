@@ -1,7 +1,7 @@
 const _ = Symbol("parameter");
 const ___ = Symbol("rest parameters");
 
-const reduce = curry(function(f, acc, iter) {
+const reduce = curry(function (f, acc, iter) {
   if (!iter) {
     iter = acc[Symbol.iterator]();
     acc = iter.next().value;
@@ -68,6 +68,34 @@ const partial = function(f, ...args1) {
   }
 };
 
+const take = function() {};
+
+const takeAll = function() {};
+
+const L = {};
+
+L.range = function *() {};
+
+const range = function() {};
+
+const find = function() {};
+
+L.map = function *() {};
+
+L.filter = function *() {};
+
+L.flat = function *() {};
+
+const flat = function() {};
+
+L.deepFlat = function *() {};
+
+const deepFlat = function() {};
+
+L.flatMap = function *() {};
+
+const flatMap = function() {};
+
 export {
   reduce,
   map,
@@ -81,4 +109,11 @@ export {
   partial,
   _,
   ___,
+  take,
+  L,
+  range,
+  find,
+  flat,
+  deepFlat,
+  flatMap
 }
