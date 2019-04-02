@@ -74,7 +74,7 @@ describe('map 함수는', () => {
      * L.map을 이용하여 map을 구현하였으면
      * 아래의 expect함수에 true를 전달하여 테스트 케이스를 통과하세요!
      */
-    expect(false).to.eql(true);
+    expect(true).to.eql(true);
   });
 });
 
@@ -89,7 +89,7 @@ describe('filter 함수는', () => {
      * L.filter를 이용하여 filter를 구현하였으면
      * 아래의 expect함수에 true를 전달하여 테스트 케이스를 통과하세요!
      */
-    expect(false).to.eql(true);
+    expect(true).to.eql(true);
   });
 });
 
