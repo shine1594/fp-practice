@@ -74,7 +74,7 @@ describe('map 함수는', () => {
      * L.map을 이용하여 map을 구현하였으면
      * 아래의 expect함수에 true를 전달하여 테스트 케이스를 통과하세요!
      */
-    expect(false).to.eql(true);
+    expect(true).to.eql(true);
   });
 });
 
@@ -89,7 +89,7 @@ describe('filter 함수는', () => {
      * L.filter를 이용하여 filter를 구현하였으면
      * 아래의 expect함수에 true를 전달하여 테스트 케이스를 통과하세요!
      */
-    expect(false).to.eql(true);
+    expect(true).to.eql(true);
   });
 });
 
@@ -284,6 +284,10 @@ describe('L.flat 함수는', () => {
   it('iterable인 element를 펼쳐서 순회할 수 있는 generator객체를 반환한다', () => {
     expect([...L.flat(iter2)]).to.eql(
       [1, ['a', 2], ['b', 3], 4, 5, 6, 7, [8, 9], 10]
+    );
+
+    expect(take(6, L.flat(iter2))).to.eql(
+      [1, ['a', 2], ['b', 3], 4, 5, 6]
     );
   });
 

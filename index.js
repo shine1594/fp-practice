@@ -1,6 +1,9 @@
 const _ = Symbol("parameter");
 const ___ = Symbol("rest parameters");
 
+const curry1 = f =>
+  (a, ...args) => args.length ? f(a, ...args) : (...args) => f(a, ...args);
+
 const reduce = curry(function (f, acc, iter) {
   if (!iter) {
     iter = acc[Symbol.iterator]();
@@ -11,12 +14,6 @@ const reduce = curry(function (f, acc, iter) {
   }
   return acc;
 }, 1);
-
-const map = curry((f, iter) =>
-  reduce((acc, item) => (acc.push(f(item)), acc), [], iter));
-
-const filter = curry((f, iter) =>
-  reduce((acc, item) => (f(item) && acc.push(item), acc), [], iter));
 
 const _baseBy = f => curry((keyF, iter) =>
   reduce((acc, item) => f(acc, item, keyF(item)), {}, iter));
@@ -68,35 +65,102 @@ const partial = function(f, ...args1) {
   }
 };
 
-const takeWhile = function () {};
+const takeWhile = curry(function(f, iter) {
+  const res = [];
+  let i = 0;
+  for (const item of iter) {
+    if (!f(item, i++)) break;
+    res.push(item);
+  }
+  return res;
+});
 
-const take = function() {};
+const take = curry1(
+  (len, iter) => takeWhile((_, i) => i < len, iter));
 
-const takeAll = function() {};
+const takeAll = take(Infinity);
 
 const L = {};
 
-L.map = function *() {};
+L.map = curry(function *(f, iter) {
+  for (const item of iter) {
+    yield f(item);
+  }
+});
 
-L.filter = function *() {};
+L.filter = function *(f, iter) {
+  for (const item of iter) {
+    if (f(item)) yield item;
+  }
+};
 
-L.range = function *() {};
+const map = curry1(pipe(L.map, takeAll));
 
-const range = function() {};
+const filter = curry1(pipe(L.filter, takeAll));
 
-const find = function() {};
+L.range = function *(len) {
+  let i = -1;
+  while(++i < len) yield i;
+};
 
-L.flat = function *() {};
+const range = pipe(L.range, takeAll);
 
-const flat = function() {};
+const find = curry1(pipe(L.filter, take(1), ([a]) => a));
 
-L.deepFlat = function *() {};
+const isIterable = iter =>
+  iter && typeof iter[Symbol.iterator] === 'function';
 
-const deepFlat = function() {};
+const complement = f => (...args) => !f(...args);
 
-L.flatMap = function *() {};
+const not = a => !a;
 
-const flatMap = function() {};
+const isString = str => typeof str === 'string';
+const isNotString = complement(isString);
+
+const both = (f1, f2) => (...args) => f1(...args) && f2(...args);
+
+const isFlatable = both(
+  isIterable,
+  isNotString
+);
+
+const last = function _last(iter) {
+  if (iter.length === undefined) return _last([...iter]);
+  else return iter[iter.length - 1]; 
+}
+
+const baseFlat = curry1(function _baseFlat(depth, iter) {
+  const iterStack = [iter[Symbol.iterator]()];
+  return {
+    next: function _recur() {
+      const iter = last(iterStack);
+      if (!iter) return { done: true }
+      const cur = iter.next();
+      if (cur.done) {
+        iterStack.pop();
+        return _recur();
+      } else if (isFlatable(cur.value) && iterStack.length <= depth) {
+        iterStack.push(cur.value[Symbol.iterator]());
+        return _recur();
+      } else {
+        return cur;
+      }
+    },
+    [Symbol.iterator]: function () { return this; }
+  }
+});
+
+L.flat = baseFlat(1);
+
+const flat = pipe(L.flat, takeAll);
+
+L.deepFlat = baseFlat(Infinity);
+
+const deepFlat = pipe(L.deepFlat, takeAll);
+
+L.flatMap = curry1(pipe(L.map, L.flat));
+
+const flatMap = curry1(pipe(L.flatMap, takeAll));
 
 export {
   reduce,
@@ -111,8 +175,8 @@ export {
   partial,
   _,
   ___,
-  take,
   takeWhile,
+  take,
   takeAll,
   L,
   range,
