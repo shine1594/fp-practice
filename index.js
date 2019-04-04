@@ -31,9 +31,8 @@ const takeWhile = curry(function(f, iter) {
   const res = [];
   let i = 0;
   for (const item of iter) {
-    if (f(item, i++)) {
-      res.push(item);
-    }
+    if (!f(item, i++)) break;
+    else res.push(item);
   }
   return res;
 });
