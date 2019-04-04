@@ -68,21 +68,23 @@ const partial = function(f, ...args1) {
   }
 };
 
+const takeWhile = function () {};
+
 const take = function() {};
 
 const takeAll = function() {};
 
 const L = {};
 
+L.map = function *() {};
+
+L.filter = function *() {};
+
 L.range = function *() {};
 
 const range = function() {};
 
 const find = function() {};
-
-L.map = function *() {};
-
-L.filter = function *() {};
 
 L.flat = function *() {};
 
@@ -110,6 +112,8 @@ export {
   _,
   ___,
   take,
+  takeWhile,
+  takeAll,
   L,
   range,
   find,

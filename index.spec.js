@@ -12,7 +12,9 @@ import {
   partial,
   _,
   ___,
+  takeWhile,
   take,
+  takeAll,
   L,
   range,
   find,
@@ -67,7 +69,7 @@ describe('map 함수는', () => {
     expect(res).to.eql([1, 4, 9, 16, 25]);
   });
 
-  it('L.map을 이용하여 구현한다', () => {
+  it('L.map을 이용하여 구현한다 (takeAll함수 이후에 작성하세요)', () => {
     /*
      * L.map을 이용하여 map을 구현하였으면
      * 아래의 expect함수에 true를 전달하여 테스트 케이스를 통과하세요!
@@ -82,7 +84,7 @@ describe('filter 함수는', () => {
     expect(res).to.eql([1, 3, 5]);
   });
 
-  it('L.filter를 이용하여 구현한다', () => {
+  it('L.filter를 이용하여 구현한다 (takeAll함수 이후에 작성하세요)', () => {
     /*
      * L.filter를 이용하여 filter를 구현하였으면
      * 아래의 expect함수에 true를 전달하여 테스트 케이스를 통과하세요!
@@ -205,8 +207,24 @@ describe('partial 함수는', () => {
   });
 });
 
+const iter3 = [1, 2, 3, 4, 3, 2, 1];
+
+describe('takeWhile 함수는', () => {
+  const always = a => _ => a;
+  it('보조함수로 element를 평가한 결과가 Falsy한 값일 때까지 순회하며 elment를 배열에 담아 반환한다', () => {
+    expect(takeWhile(a => a !== 4, iter3)).to.eql([1, 2, 3]);
+  });
+  it('최대 iterable의 length까지 순회한다', () => {
+    expect(takeWhile(always(true), iter3)).to.eql([1, 2, 3, 4, 3, 2, 1]);
+  });
+  it('커링이 적용되어 인자를 모두 받을 때까지 평가를 지연한다', () => {
+    expect(takeWhile(a => a !== 4)(iter3)).to.eql([1, 2, 3]);
+    expect(takeWhile(always(true))(iter3)).to.eql([1, 2, 3, 4, 3, 2, 1]);
+  });
+});
+
 describe('take 함수는', () => {
-  it('첫 번째 인자로 전달한 정수값 만큼 iterable을 순회하며 element를 배열에 담아 반환한다', () => {
+  it('iterable을 순회하며 첫 번째 인자로 전달한 정수값 만큼 element를 배열에 담아 반환한다', () => {
     expect(take(3, iter)).to.eql([1, 2, 3]);
   });
   it('최대 iterable의 length까지 순회한다', () => {
@@ -218,7 +236,12 @@ describe('take 함수는', () => {
   });
 });
 
-const takeAll = take(Infinity);
+describe('takeAll 함수는', () => {
+  it('iterable을 끝까지 순회하여 모든 element를 배열에 담아 반환한다', () => {
+    expect(takeAll(iter)).to.eql([1, 2, 3, 4, 5]);
+    expect(takeAll(iter3)).to.eql([1, 2, 3, 4, 3, 2, 1]);
+  });
+});
 
 describe('L.range 함수는', () => {
   it('0부터 입력받은 정수까지 범위의 숫자를 만들어내는 generator객체를 반환한다', () => {
