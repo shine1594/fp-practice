@@ -1,10 +1,16 @@
 const _ = Symbol("parameter");
 const ___ = Symbol("rest parameters");
 
+const curry = (f, len = f.length - 1) =>
+  function _recur(...args1) {
+    if (args1.length > len) return f(...args1);
+    return (...args2) => _recur(...args1, ...args2);
+  }
+
 const curry1 = f =>
   (a, ...args) => args.length ? f(a, ...args) : (...args) => f(a, ...args);
 
-const reduce = curry(function (f, acc, iter) {
+const reduce = curry1(function (f, acc, iter) {
   if (!iter) {
     iter = acc[Symbol.iterator]();
     acc = iter.next().value;
@@ -13,35 +19,7 @@ const reduce = curry(function (f, acc, iter) {
     acc = f(acc, item);
   }
   return acc;
-}, 1);
-
-const _baseBy = f => curry((keyF, iter) =>
-  reduce((acc, item) => f(acc, item, keyF(item)), {}, iter));
-
-const groupBy = _baseBy((acc, item, key) => Object.assign(acc, {
-  [key]: (acc[key] || []).concat(item)
-}));
-
-const countBy = _baseBy((acc, item, key) => Object.assign(acc, {
-  [key]: (acc[key] || 0) + 1
-}));
-
-const indexBy = _baseBy((acc, item, key) => Object.assign(acc, {
-  [key]: item
-}));
-
-const pipe = (f1, ...fns) =>
-  (...args) => reduce((acc, f) => f(acc), f1(...args), fns);
-
-const go = (a, ...fns) => pipe(...fns)(a);
-// const go = (...args) => reduce((acc, f) => f(acc), args);
-
-function curry(f, len = f.length - 1) {
-  return function _recur(...args1) {
-    if (args1.length > len) return f(...args1);
-    return (...args2) => _recur(...args1, ...args2);
-  };
-};
+});
 
 const reverseIter = function* (iter) {
   const arr = [...iter];
@@ -65,7 +43,57 @@ const partial = function(f, ...args1) {
   }
 };
 
-const takeWhile = curry(function(f, iter) {
+const pipe = (f1, ...fns) =>
+  (...args) => reduce((acc, f) => f(acc), f1(...args), fns);
+
+const go = (a, ...fns) => pipe(...fns)(a);
+
+const identity = a => a;
+const always = a => () => a;
+const not = a => !a;
+const complement = f => pipe(f, not);
+const both = curry1((f1, f2) => (...args) => f1(...args) && f2(...args));
+const add = curry1((a, b) => a + b);
+const addAll = (...args) => reduce(add, args);
+const square = a => a * a;
+const isOddNumber = a => a % 2;
+const prop = curry1((key, obj) => obj[key]);
+const equals = curry1((a, b) => a === b);
+const propEq = curry(
+  (key, val, obj) => go(obj, prop(key), equals(val)));
+
+const typeOf = a => typeof a;
+const isTypeOf = curry1((type, val) => go(
+  val,
+  typeOf,
+  equals(type)
+));
+const isString = isTypeOf('string');
+const isNotString = complement(isString);
+const isIterable = both(
+  identity,
+  pipe(
+    prop(Symbol.iterator),
+    isTypeOf('function')
+  )
+);
+
+const _baseBy = f => curry1((keyF, iter) =>
+  reduce((acc, item) => f(acc, item, keyF(item)), {}, iter));
+
+const groupBy = _baseBy((acc, item, key) => Object.assign(acc, {
+  [key]: (acc[key] || []).concat(item)
+}));
+
+const countBy = _baseBy((acc, item, key) => Object.assign(acc, {
+  [key]: (acc[key] || 0) + 1
+}));
+
+const indexBy = _baseBy((acc, item, key) => Object.assign(acc, {
+  [key]: item
+}));
+
+const takeWhile = curry1(function(f, iter) {
   const res = [];
   let i = 0;
   for (const item of iter) {
@@ -82,17 +110,17 @@ const takeAll = take(Infinity);
 
 const L = {};
 
-L.map = curry(function *(f, iter) {
+L.map = curry1(function *(f, iter) {
   for (const item of iter) {
     yield f(item);
   }
 });
 
-L.filter = function *(f, iter) {
+L.filter = curry1(function *(f, iter) {
   for (const item of iter) {
     if (f(item)) yield item;
   }
-};
+});
 
 const map = curry1(pipe(L.map, takeAll));
 
@@ -106,18 +134,6 @@ L.range = function *(len) {
 const range = pipe(L.range, takeAll);
 
 const find = curry1(pipe(L.filter, take(1), ([a]) => a));
-
-const isIterable = iter =>
-  iter && typeof iter[Symbol.iterator] === 'function';
-
-const complement = f => (...args) => !f(...args);
-
-const not = a => !a;
-
-const isString = str => typeof str === 'string';
-const isNotString = complement(isString);
-
-const both = (f1, f2) => (...args) => f1(...args) && f2(...args);
 
 const isFlatable = both(
   isIterable,
@@ -163,6 +179,14 @@ L.flatMap = curry1(pipe(L.map, L.flat));
 const flatMap = curry1(pipe(L.flatMap, takeAll));
 
 export {
+  isOddNumber,
+  square,
+  add,
+  addAll,
+  prop,
+  propEq,
+  equals,
+  always,
   reduce,
   map,
   filter,
@@ -172,6 +196,7 @@ export {
   pipe,
   go,
   curry,
+  curry1,
   partial,
   _,
   ___,

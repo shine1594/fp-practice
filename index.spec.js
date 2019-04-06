@@ -1,5 +1,13 @@
 import { expect } from 'chai';
 import {
+  isOddNumber,
+  square,
+  add,
+  addAll,
+  prop,
+  propEq,
+  equals,
+  always,
   reduce,
   map,
   filter,
@@ -22,14 +30,6 @@ import {
   deepFlat,
   flatMap,
 } from './index.js';
-import {
-  isOddNumber,
-  square,
-  add,
-  prop,
-  propEq,
-  equals,
-} from './utils';
 
 const iter = {
   *[Symbol.iterator]() {
@@ -142,7 +142,6 @@ describe('pipe 함수는', () => {
   });
 
   it('첫 번째 함수에 여러 개의 인자를 전달할 수 있다', () => {
-    const addAll = (...args) => reduce(add, args);
     const func = pipe(
       addAll,
       square,
@@ -201,7 +200,6 @@ describe('partial 함수는', () => {
   });
 
   it('___심볼을 이용하여 나머지 인자를 지원한다', () => {
-    const addAll = (...args) => reduce(add, args);
     expect(partial(addAll, 1, ___, 5)(2, 3, 4)).to.eql(15);
     expect(partial(addAll, 1, ___, 5, _, 7, _, 9)(2, 3, 4 ,6, 8)).to.eql(45);
   });
@@ -210,7 +208,6 @@ describe('partial 함수는', () => {
 const iter3 = [1, 2, 3, 4, 3, 2, 1];
 
 describe('takeWhile 함수는', () => {
-  const always = a => _ => a;
   it('보조함수로 element를 평가한 결과가 Falsy한 값일 때까지 순회하며 elment를 배열에 담아 반환한다', () => {
     expect(takeWhile(a => a !== 4, iter3)).to.eql([1, 2, 3]);
   });
