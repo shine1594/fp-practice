@@ -16,7 +16,7 @@
     "mocha": "^6.0.2"
   },
   "scripts": {
-    "test": "mocha --require babel-core/register index.spec.js"
+    "test": "mocha -w --require babel-core/register index.spec.js"
   },
   "babel": {
     "presets": [
