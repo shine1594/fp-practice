@@ -5,7 +5,7 @@ const curry = (f, len = f.length - 1) =>
   function _recur(...args1) {
     if (args1.length > len) return f(...args1);
     return (...args2) => _recur(...args1, ...args2);
-  }
+  };
 
 const curry1 = f =>
   (a, ...args) => args.length ? f(a, ...args) : (...args) => f(a, ...args);
@@ -143,7 +143,7 @@ const isFlatable = both(
 const last = function _last(iter) {
   if (iter.length === undefined) return _last([...iter]);
   else return iter[iter.length - 1]; 
-}
+};
 
 const baseFlat = curry1(function _baseFlat(depth, iter) {
   const iterStack = [iter[Symbol.iterator]()];
