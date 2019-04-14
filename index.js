@@ -41,7 +41,7 @@ function curry(f, len = f.length - 1) {
     if (args1.length > len) return f(...args1);
     return (...args2) => _recur(...args1, ...args2);
   };
-};
+}
 
 const reverseIter = function* (iter) {
   const arr = [...iter];
@@ -49,8 +49,8 @@ const reverseIter = function* (iter) {
 };
 
 const partial = function(f, ...args1) {
-  const left = [], right = [];
   return function (...args2) {
+    const left = [], right = [];
     const args1Iter = args1[Symbol.iterator]();
     const args2Iter = args2[Symbol.iterator]();
     for (const arg of args1Iter) {
@@ -127,7 +127,7 @@ const isFlatable = both(
 const last = function _last(iter) {
   if (iter.length === undefined) return _last([...iter]);
   else return iter[iter.length - 1]; 
-}
+};
 
 const baseFlat = curry1(function _baseFlat(depth, iter) {
   const iterStack = [iter[Symbol.iterator]()];
