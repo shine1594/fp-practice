@@ -1,4 +1,4 @@
-# Stage1-example
+# Stage1 Practice
   stage1에서 작성한 여러 함수들을 활용하여 Github API를 호출하여 html파일에 동적으로 table을 rendering하는 예제 코드입니다. [parcel](<https://parceljs.org/>)을 이용하여 javascript를 build하고 간단한 로컬 서버로 테스트해볼 수 있습니다. app.js에 코드를 작성해볼 수 있으며, 스터디를 진행하며 완성한 코드는 example.js 입니다.
 
 
