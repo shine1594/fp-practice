@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import {
+  delay,
   isOddNumber,
   square,
   add,
@@ -29,6 +30,7 @@ import {
   flat,
   deepFlat,
   flatMap,
+  C,
 } from './index.js';
 
 const iter = {
@@ -61,6 +63,45 @@ describe('reduce 함수는', () => {
     expect(reduce(add)(10, iter)).to.eql(25);
     expect(reduce(add)(iter)).to.eql(15);
   });
+
+  it('순회하는 iterable의 element가 Promise이면 풀어서 순회한다', async () => {
+    const res = await go(
+      iter,
+      L.map(Promise.resolve.bind(Promise)),
+      L.filter(isOddNumber),
+      reduce(add),
+    );
+    expect(res).to.eql(9);
+  });
+
+  it('누적되는 값이 Promise로 평가되면 풀어서 결과값을 만든다', async () => {
+    const res = await reduce((acc, item) => Promise.resolve(acc + item), iter);
+    expect(res).to.eql(15);
+  });
+
+  it('element가 nop인 경우 값을 누적하지 않고 건너뛰어 다음 element를 평가한다', async () => {
+    const res = await go(
+      Promise.resolve(Array.from(iter)),
+      L.filter(isOddNumber),
+      L.map(square),
+      reduce(add)
+    );
+    expect(res).to.eql(35);
+  });
+});
+
+describe('C.reduce 함수는', () => {
+  it('병렬적으로 비동기를 처리한다', async function() {
+    // set a test-level timeout
+    this.timeout(120);
+    const res = await go(
+      L.range(10),
+      L.map(partial(delay, 100, square)),
+      L.filter(isOddNumber),
+      C.reduce(add)
+    );
+    expect(res).to.eql(165);
+  });
 });
 
 describe('map 함수는', () => {
@@ -76,6 +117,28 @@ describe('map 함수는', () => {
      */
     expect(true).to.eql(true);
   });
+
+  it('element가 Pormise이면 풀어서 보조함수를 적용하고 결과를 Promise로 반환한다', async () => {
+    const promises = [...iter].map(Promise.resolve.bind(Promise));
+    const res = await map(square, promises);
+    expect(res).to.eql([1, 4, 9, 16, 25]);
+  });
+});
+
+describe('C.map 함수는', () => {
+  it('병렬적으로 비동기를 처리한다', async function() {
+    this.timeout(120);
+
+    const res = await go(
+      iter,
+      L.map(partial(delay, 100, square)),
+      L.take(3),
+      C.map(Math.sqrt),
+      reduce(add)
+    );
+
+    expect(res).to.eql(6);
+  });
 });
 
 describe('filter 함수는', () => {
@@ -90,6 +153,27 @@ describe('filter 함수는', () => {
      * 아래의 expect함수에 true를 전달하여 테스트 케이스를 통과하세요!
      */
     expect(true).to.eql(true);
+  });
+
+  it('element가 Pormise이면 풀어서 보조함수를 적용하고 결과를 Promise로 반환한다', async () => {
+    const promises = [...iter].map(Promise.resolve.bind(Promise));
+    const res = await filter(isOddNumber, promises);
+    expect(res).to.eql([1, 3, 5]);
+  });
+});
+
+describe('C.filter 함수는', () => {
+  it('병렬적으로 비동기를 처리한다', async function() {
+    this.timeout(120);
+
+    const res = await go(
+      iter,
+      L.map(partial(delay, 100, square)),
+      C.filter(isOddNumber),
+      reduce(add)
+    );
+
+    expect(res).to.eql(35);
   });
 });
 
@@ -218,6 +302,14 @@ describe('takeWhile 함수는', () => {
     expect(takeWhile(a => a !== 4)(iter3)).to.eql([1, 2, 3]);
     expect(takeWhile(always(true))(iter3)).to.eql([1, 2, 3, 4, 3, 2, 1]);
   });
+  it('element가 Pormise이면 풀어서 보조함수를 적용하고 결과를 Promise로 반환한다', async () => {
+    const res = await go(
+      iter3,
+      L.map(Promise.resolve.bind(Promise)),
+      takeWhile(item => item !== 4)
+    );
+    expect(res).to.eql([1, 2, 3]);
+  });
 });
 
 describe('take 함수는', () => {
@@ -230,6 +322,28 @@ describe('take 함수는', () => {
   it('커링이 적용되어 인자를 모두 받을 때까지 평가를 지연한다', () => {
     expect(take(3)(iter)).to.eql([1, 2, 3]);
     expect(take(Infinity)(iter)).to.eql([1, 2, 3, 4, 5]);
+  });
+  it('element가 Pormise이면 풀어서 보조함수를 적용하고 결과를 Promise로 반환한다', async () => {
+    const res = await go(
+      iter3,
+      L.map(Promise.resolve.bind(Promise)),
+      take(3)
+    );
+    expect(res).to.eql([1, 2, 3]);
+  });
+});
+
+describe('C.take 함수는', function() {
+  it('병렬적으로 비동기를 처리한다', async function() {
+    // set a test-level timeout
+    this.timeout(120);
+    const res = await go(
+      L.range(10),
+      L.map(partial(delay, 100, square)),
+      L.filter(isOddNumber),
+      C.take(5)
+    );
+    expect(res).to.eql([1, 9, 25, 49, 81]);
   });
 });
 
@@ -298,8 +412,37 @@ describe('flat 함수는', () => {
     expect(flat(iter2)).to.eql(
       [1, ['a', 2], ['b', 3], 4, 5, 6, 7, [8, 9], 10]);
   });
+
   it('string은 flat할 대상이 아닌 하나의 값으로 처리한다', () => {
     expect(flat([1, 'abc', 3])).to.eql([1, 'abc', 3]);
+  });
+
+  it('flat([[], [], []])', () => {
+    expect(flat([[], [], []])).to.eql([]);
+  });
+
+  it('flat([Promise.resolve([], [], [])])', async () => {
+    expect(await flat([Promise.resolve([], [], [])])).to.eql([]);
+  });
+
+  it('flat([Promise.resolve([]), [], Promise.resolve([])])', async () => {
+    expect(await flat([Promise.resolve([]), [], Promise.resolve([])])).to.eql([]);
+  });
+
+  it('flat([0, [1, [2], 3], 4, [5, [6], 7], 8])', () => {
+    expect(flat([0, [1, [2], 3], 4, [5, [6], 7], 8])).to.eql([0, 1, [2], 3, 4, 5, [6], 7, 8]);
+  });
+
+  it('flat([0, Promise.resolve([1, [2, 3], 4]), Promise.resolve(5)])', async () => {
+    expect(await flat([0, Promise.resolve([1, [2, 3], 4]), Promise.resolve(5)])).to.eql([0, 1, [2, 3], 4, 5]);
+  })
+
+  it('flat([0, [1, Promise.resolve([2, 3]), 4], 5])', async () => {
+    expect(await flat([0, [1, Promise.resolve([2, 3]), 4], Promise.resolve(5)])).to.eql([0, 1, [2, 3], 4, 5]);
+  });
+
+  it('flat([Promise.resolve("01"), "23", [Promise.resolve(["45"]), "67"], "89"])', async () => {
+    expect(await flat([Promise.resolve("01"), "23", [Promise.resolve(["45"]), "67"], "89"])).to.eql(["01", "23", ["45"], "67", "89"]);
   });
 });
 
@@ -327,6 +470,13 @@ describe('deepFlat 함수는', () => {
 
   it('string은 flat할 대상이 아닌 하나의 값으로 처리한다', () => {
     expect(deepFlat([1, [2, ['abc'], 3], 4])).to.eql([1, 2, 'abc', 3, 4]);
+  });
+
+  it('deepFlat([[[]]])', () => {
+    expect(deepFlat([[[]]])).to.eql([])
+  });
+  it('deepFlat([0, Promise.resolve([1, Promise.resolve([2, 3]), 4]), Promise.resolve(5), 6])', async () => {
+    expect(await deepFlat([0, Promise.resolve([1, Promise.resolve([2, 3]), 4]), Promise.resolve(5), 6])).to.eql([0, 1, 2, 3, 4, 5, 6]);
   });
 });
 
