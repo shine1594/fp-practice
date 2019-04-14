@@ -417,20 +417,12 @@ describe('flat 함수는', () => {
     expect(flat([1, 'abc', 3])).to.eql([1, 'abc', 3]);
   });
 
-  it('flat([[], [], []])', () => {
-    expect(flat([[], [], []])).to.eql([]);
-  });
-
   it('flat([Promise.resolve([], [], [])])', async () => {
     expect(await flat([Promise.resolve([], [], [])])).to.eql([]);
   });
 
   it('flat([Promise.resolve([]), [], Promise.resolve([])])', async () => {
     expect(await flat([Promise.resolve([]), [], Promise.resolve([])])).to.eql([]);
-  });
-
-  it('flat([0, [1, [2], 3], 4, [5, [6], 7], 8])', () => {
-    expect(flat([0, [1, [2], 3], 4, [5, [6], 7], 8])).to.eql([0, 1, [2], 3, 4, 5, [6], 7, 8]);
   });
 
   it('flat([0, Promise.resolve([1, [2, 3], 4]), Promise.resolve(5)])', async () => {
@@ -472,9 +464,6 @@ describe('deepFlat 함수는', () => {
     expect(deepFlat([1, [2, ['abc'], 3], 4])).to.eql([1, 2, 'abc', 3, 4]);
   });
 
-  it('deepFlat([[[]]])', () => {
-    expect(deepFlat([[[]]])).to.eql([])
-  });
   it('deepFlat([0, Promise.resolve([1, Promise.resolve([2, 3]), 4]), Promise.resolve(5), 6])', async () => {
     expect(await deepFlat([0, Promise.resolve([1, Promise.resolve([2, 3]), 4]), Promise.resolve(5), 6])).to.eql([0, 1, 2, 3, 4, 5, 6]);
   });
