@@ -105,8 +105,8 @@ const reverseIter = function* (iter) {
 };
 
 const partial = function(f, ...args1) {
-  const left = [], right = [];
   return function (...args2) {
+    const left = [], right = [];
     const args1Iter = args1[Symbol.iterator]();
     const args2Iter = args2[Symbol.iterator]();
     for (const arg of args1Iter) {
