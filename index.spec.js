@@ -467,10 +467,6 @@ describe('deepFlat 함수는', () => {
   it('deepFlat([0, Promise.resolve([1, Promise.resolve([2, 3]), 4]), Promise.resolve(5), 6])', async () => {
     expect(await deepFlat([0, Promise.resolve([1, Promise.resolve([2, 3]), 4]), Promise.resolve(5), 6])).to.eql([0, 1, 2, 3, 4, 5, 6]);
   });
-
-  it('deepFlat(Promise.resolve([0, Promise.resolve([1, Promise.resolve([2, 3]), 4]), Promise.resolve(5), 6])))', async () => {
-    expect(await deepFlat(Promise.resolve([0, Promise.resolve([1, Promise.resolve([2, 3]), 4]), Promise.resolve(5), 6]))).to.eql([0, 1, 2, 3, 4, 5, 6]);
-  });
 });
 
 describe('L.flatMap 함수는', () => {
