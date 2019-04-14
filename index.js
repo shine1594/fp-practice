@@ -8,7 +8,7 @@ function curry(f, len = f.length - 1) {
     if (args1.length > len) return f(...args1);
     return (...args2) => _recur(...args1, ...args2);
   };
-};
+}
 
 const curry1 = f =>
   (a, ...args) => args.length ? f(a, ...args) : (...args2) => f(a, ...args2); 
@@ -22,8 +22,7 @@ L.reduce = curry1(function* (f, acc, iter) {
   let tmp = null;
   for (const item of iter) {
     tmp = f(acc, item);
-    if (tmp === nop) continue;
-    else yield acc = tmp;
+    if (tmp !== nop) yield acc = tmp;
   }
 });
 
@@ -48,7 +47,7 @@ const last = function _last(iter) {
   else return _last([...iter]);
 };
 
-var reduce = curry1((...args) => last(L.reduce(...args)));
+const reduce = curry1((...args) => last(L.reduce(...args)));
 
 function pipe(f1, ...fns) {
   return (...args) => reduce((acc, f) => f(acc), f1(...args), fns);
@@ -56,7 +55,6 @@ function pipe(f1, ...fns) {
 
 const go = (a, ...fns) => pipe(...fns)(a);
 // const go = (...args) => reduce((acc, f) => f(acc), args);
-
 
 L.map = curry1(function* (f, iter) {
   const reduceIter = L.reduce(
