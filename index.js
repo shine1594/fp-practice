@@ -1,5 +1,6 @@
 const _ = Symbol("parameter");
 const ___ = Symbol("rest parameters");
+const nop = Symbol("nop");
 
 const curry = (f, len = f.length - 1) =>
   function _recur(...args1) {
@@ -78,6 +79,10 @@ const isIterable = both(
   )
 );
 
+const delay = (time, f, ...args) => new Promise(function (resolve) {
+  setTimeout(_ => pipe(f, resolve)(...args), time);
+});
+
 const _baseBy = f => curry1((keyF, iter) =>
   reduce((acc, item) => f(acc, item, keyF(item)), {}, iter));
 
@@ -142,7 +147,7 @@ const isFlatable = both(
 
 const last = function _last(iter) {
   if (iter.length === undefined) return _last([...iter]);
-  else return iter[iter.length - 1]; 
+  else return iter[iter.length - 1];
 };
 
 const baseFlat = curry1(function _baseFlat(depth, iter) {
@@ -178,7 +183,18 @@ L.flatMap = curry1(pipe(L.map, L.flat));
 
 const flatMap = curry1(pipe(L.flatMap, takeAll));
 
+const C = {};
+
+const noop = () => {};
+
+C.reduce = noop;
+C.take = noop;
+C.takeAll = noop;
+C.map = noop;
+C.filter = noop;
+
 export {
+  delay,
   isOddNumber,
   square,
   add,
@@ -208,5 +224,6 @@ export {
   find,
   flat,
   deepFlat,
-  flatMap
+  flatMap,
+  C,
 }
