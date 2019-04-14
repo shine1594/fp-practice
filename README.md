@@ -37,8 +37,8 @@ npm test
 
     - **index.js**: stage1에서 작성한 함수 모음
     - **index.html**: 미리 작성된 css와 app.js를 load하며, table이 그려질 ```<div id="app"><div>``` 가 작성되어 있음
-    - **app.js**: Github API를 호출하고 table tag를 동적으로 생성하여 ```<div id="app"><div>``` 에 붙여넣는 코드를 위한 template 코드가 작성되어 있습니다.
-    - **example.js**: 스터디를 진행하며 완성한 코드입니다.
+    - **app.js**: Github API를 호출하고 table tag를 동적으로 생성하여 ```<div id="app"><div>``` 에 붙여넣는 코드를 작성하기 위한 template 코드
+    - **example.js**: 스터디를 진행하며 완성한 app.js 코드
 
   
 
