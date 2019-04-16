@@ -47,7 +47,7 @@ const partial = function(f, ...args1) {
 const pipe = (f1, ...fns) =>
   (...args) => reduce((acc, f) => f(acc), f1(...args), fns);
 
-const go = (a, ...fns) => pipe(...fns)(a);
+const go = (...args) => reduce((acc, f) => f(acc), args);
 
 const identity = a => a;
 const always = a => () => a;
