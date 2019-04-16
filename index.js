@@ -36,7 +36,6 @@ const partial = function(f, ...args1) {
   }
 };
 
-const next = iter => iter[Symbol.iterator]().next().value;
 const tap = curry1((f, v) => (f(v), v));
 const log = console.log;
 const hi = tap(log);
@@ -55,24 +54,18 @@ const reduce = curry1(function _reduce(f, acc, iter) {
       .catch(e => e === nop ? _reduce(f, iter) : Promise.reject(e));
   }
   
-  let cur = null, currAcc = null;
-  return function _recur(prevAcc) {
+  let cur = null;
+  return function _recur(acc) {
     while (!(cur = iter.next()).done) {
       if (cur.value instanceof Promise) {
         return cur.value
-          .then(v => (currAcc = f(prevAcc, v), _recur(currAcc)))
-          .catch(e => e === nop ? _recur(prevAcc) : Promise.reject(e));
+          .then(v => (acc = f(acc, v), _recur(acc)))
+          .catch(e => e === nop ? _recur(acc) : Promise.reject(e));
       }
-      currAcc = f(prevAcc, cur.value);
-      if (currAcc instanceof Promise) {
-        return currAcc
-          .then(acc => (currAcc = acc, _recur(acc)))
-          .catch(e => e === nop ? _recur(prevAcc) : Promise.reject(e));
-      } else {
-        prevAcc = currAcc;
-      }
+      acc = f(acc, cur.value);
+      if (acc instanceof Promise) return acc.then(_recur);
     }
-    return currAcc;
+    return acc;
   } (acc);
 });
 
@@ -187,7 +180,9 @@ L.map = curry1(function *(f, iter) {
 
 L.filter = curry1(function *(f, iter) {
   for (const item of iter) {
-    if (item instanceof Promise) yield go1(item, v => f(v) ? v : Promise.reject(nop));
+    if (item instanceof Promise) {
+      yield go1(item, v => f(v) ? v : Promise.reject(nop));
+    }
     else if(f(item)) yield item;
   }
 });
